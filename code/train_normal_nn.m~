@@ -1,8 +1,0 @@
-function train_normal_nn()
-% Here we will train the normal images for the neural network
-% Images are already preloaded into a .mat file - ants_learn_data_nopad.mat
-load ../data/ants_learn_data.mat
-load ../data/ants_learn
-% Data is in ants_learn_data: 200 images of 1x400 vectorized image
-
-end

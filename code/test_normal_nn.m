@@ -4,8 +4,20 @@ function test_normal_nn(nn)
 % ../data/images folder for testing 
 while (true)
     if (any(size(dir('../data/images/test.jpg'),1)))
-        % Test the image
-        label = nnpredict(nn, test_x);
+        % Read the image
+        test = imread('../data/images/test.jpg');
+        
+        % Prepares the image for testing
+        test_g = rgb2gray(test);
+        [x,y] = size(test_g);
+        test_sz = min(x,y);
+        test_cropped = imresize(sample_im, [test_sz test_sz]);
+        test_scale = 20/test_sz;
+        test_resized = imresize(test_cropped, test_scale);
+        test_f = reshape(test_resized, [1 400]);
+        
+        %Test
+        label = nnpredict(nn, test_f);
         
         %After making prediction, if it is 0 shape then raise flag in .txt file
         fid = fopen( '../data/output/output.txt', 'wt' );
