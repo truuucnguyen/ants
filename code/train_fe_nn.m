@@ -27,8 +27,8 @@ rand('state',0);
 conf = struct('a', 200, 'n', 400, 'N', 200, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data);
 
 % Creates .mat file for test synthetic data and saves input_struct to it
-m = matfile(['../data/syntheticTest.mat'], 'Writable', true);
-save(['../data/syntheticTest.mat'], 'conf');
+m = matfile('../data/syntheticTest.mat', 'Writable', true);
+save('../data/syntheticTest.mat', 'conf');
 
 % main_learn_2d.m
 % This code implements convolutional tensor decomposition
@@ -37,8 +37,7 @@ save(['../data/syntheticTest.mat'], 'conf');
 % This function estimates the filters based on conf.sample. 
 
 %clear;clc;
-L = 1;
-load(['../data/syntheticTest.mat']);
+load('../data/syntheticTest.mat');
 conf.maxIter = 100;
 conf.minIter = 1;
 conf.tol = 1e-4;
@@ -47,7 +46,7 @@ addpath('fn-2d/');
 Tensor = Construct_Tensor_from_Data(conf.sample, conf.N);
 ALS(conf, Tensor)
 
-save(['../data/syntheticTest_estimate.mat'],'conf','estimate');
+save('../data/syntheticTest_estimate.mat','conf','estimate');
 
 % This code implements convolutional tensor decomposition
 % copyright Furong Huang, furongh@uci.edu
@@ -56,9 +55,8 @@ save(['../data/syntheticTest_estimate.mat'],'conf','estimate');
 
 clear;clc;
 addpath('fn-2d/')
-L = 1;
 
-load(['../data/syntheticTest_estimate.mat']);
+load('../data/syntheticTest_estimate.mat');
 
 estimate.H = zeros(size(conf.sample,2),conf.n*conf.n,conf.L);
 for id_sample = 1 : size(conf.sample,2)
@@ -70,9 +68,9 @@ for id_sample = 1 : size(conf.sample,2)
     estimate.H(id_sample,:,i)  = thisH((i-1)*conf.n*conf.n+1:i*conf.n*conf.n)'; 
     end
 end
-save(['../data/syntheticTest_estimate.mat'],'conf','estimate');
+save('../data/syntheticTest_estimate.mat','conf','estimate');
 
-load(['../data/syntheticTest_estimate.mat']);
+load('../data/syntheticTest_estimate.mat');
 
 % 2 is the number of output nodes
 % 400 is number of input  nodes
