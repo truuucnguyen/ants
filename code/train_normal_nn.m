@@ -7,7 +7,7 @@ load ../data/ants_learn_labels.mat
 % Data is in ants_learn_data: 200 images of 1x400 vectorized image
 % Labels are in ants_learn_labels: 200 vectors of [0,1] or [1,0]
 
-[ants_learn_data, mu, sigma] = zscore(ants_learn_data);
+[ants_learn_data_nopad, mu, sigma] = zscore(ants_learn_data_nopad);
 
 rand('state',0);
 
@@ -17,7 +17,7 @@ rand('state',0);
 nn = nnsetup([400 20 2]);
 opts.numepochs =  1;   %  Number of full sweeps through data
 opts.batchsize = 1;  %  Take a mean gradient step over this many samples
-[nn, L] = nntrain(nn, train_x, train_y, opts);
+[nn, L] = nntrain(nn, ants_learn_data_nopad, ants_learn_labels, opts);
 
 test_normal_nn(nn);
 end
