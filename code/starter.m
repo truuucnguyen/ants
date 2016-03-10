@@ -1,40 +1,11 @@
 % starter.m
 % Will take in a number of sample images and vectorize it
 % Initially trying to scale down to around 20x20 pixels
-% Two different types of input: samples and filter
 
-% Loading sample (training) image (eventually use a for loop to do this with all
-% sample images
-N = 11;
-L = 1;
-samples = zeros(N,400);
-for i = 1:N
-    path = strcat('../data/images/sample',num2str(i),'.jpg');
-    sample_im = rgb2gray(imread(path));
-    [x,y] = size(sample_im);
-    sample_sz = min(x,y);
-    sample_cropped = imresize(sample_im, [sample_sz sample_sz]);
-    sample_scale = 20/sample_sz;
-    sample_resized = imresize(sample_cropped, sample_scale);
-    sample_v = reshape(sample_resized, [1 400]);
-    samples(i,:) = sample_v;
-end
-
-% Loading test image
-%filter_im = imread('../data/images/triangle.jpg');
-filter_im = imread('../data/images/sample4.jpg');
-% Changing image to grayscale
-filter_gray = rgb2gray(filter_im);
-% Crops the edges to create a square image
-% Calculating scale for image and scales down the given image
-[f_x,f_y] = size(filter_gray);
-sz = min(f_x,f_y);
-f_cropped = imresize(filter_gray, [sz sz]);
-scale = 20/sz;
-f_resized = imresize(f_cropped, scale);
-
-% Converts image matrix into a vector (matrix with one column)
-f_vectorized = reshape(f_resized, [1 400]);
+load '../data/ants_learn_data'
+load '../data/ants_test_data'
+load '../data/ants_learn_labels'
+load '../data/ants_test_labels'
 
 % Beginning to create struct for input to Furong's algorithm
 %
@@ -56,11 +27,14 @@ f_vectorized = reshape(f_resized, [1 400]);
 % neural network will give it true y and weights for training data
 % test data will give y_hat which will show which object it matches
 
-conf = struct('a', length(f_vectorized)/2, 'n', length(f_vectorized), 'N', N, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', samples);
+conf = struct('a', 200, 'n', 400, 'N', 200, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data);
+test_conf = struct('a', 200, 'n', 400, 'N', 20, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_test_data);
 
 % Creates .mat file for test synthetic data and saves input_struct to it
-m = matfile(['../data/syntheticTest',num2str(L),'.mat'], 'Writable', true);
-save(['../data/syntheticTest',num2str(L),'.mat'], 'conf');
+m = matfile('../data/syntheticDataFE.mat', 'Writable', true);
+m = matfile('../data/syntheticTestFE.mat', 'Writable', true);
+save('../data/syntheticDataFE.mat', 'conf');
+save('../data/syntheticTestFE.mat', 'test_conf');
 
 % main_learn_2d.m
 % This code implements convolutional tensor decomposition
@@ -69,21 +43,70 @@ save(['../data/syntheticTest',num2str(L),'.mat'], 'conf');
 % This function estimates the filters based on conf.sample. 
 
 %clear;clc;
-L = 1;
-load(['../data/syntheticTest',num2str(L),'.mat']);
+load('../data/syntheticDataFE.mat');
 conf.maxIter = 100;
 conf.minIter = 1;
 conf.tol = 1e-4;
 conf.IniTrue = 0;
 addpath('fn-2d/');
-%Tensor = Construct_Tensor_from_Data(conf.sample, conf.N);
-%ALS(conf, Tensor)
+Tensor = Construct_Tensor_from_Data(conf.sample, conf.N);
+ALS(conf, Tensor);
+save('../data/syntheticDataFE_estimate.mat','conf','estimate');
+clear;clc;
 
-%save(['../data/syntheticTest',num2str(L),'_estimate.mat'],'conf','estimate');
+load('../data/syntheticTestFE.mat');
+conf.maxIter = 100;
+conf.minIter = 1;
+conf.tol = 1e-4;
+conf.IniTrue = 0;
+addpath('fn-2d/');
+Tensor = Construct_Tensor_from_Data(conf.sample, conf.N);
+ALS(conf, Tensor);
+save('../data/syntheticTestFE_estimate.mat','conf','estimate');
 
-train_x = double(samples);
-train_y = double([[0,1];[0,1];[0,1];[1,0];[1,0];[1,0];[1,0];[1,0];[0,1];[0,1];[1,0]]);
-test_x = double(f_vectorized);
+% This code implements convolutional tensor decomposition
+% copyright Furong Huang, furongh@uci.edu
+% Cite paper arXiv:1506.03509
+% This function estimates the filters based on conf.sample.
+
+clear;clc;
+addpath('fn-2d/')
+
+load '../data/syntheticDataFE_estimate.mat'
+estimate.H = zeros(size(conf.sample,2),conf.n*conf.n,conf.L);
+for id_sample = 1 : size(conf.sample,2)
+    fprintf('id_sample:%d\n',id_sample);
+    filters = estimate.f;
+    inv_concated_circulant_filters = cir_inv_2d(filters);
+    thisH = inv_concated_circulant_filters*conf.sample(:,id_sample);
+    for i = 1:conf.L
+    estimate.H(id_sample,:,i)  = thisH((i-1)*conf.n*conf.n+1:i*conf.n*conf.n)'; 
+    end
+end
+save('../data/mnistData_estimate.mat','conf','estimate');
+
+load '../data/syntheticTestFE_estimate.mat'
+estimate.H = zeros(size(conf.sample,2),conf.n*conf.n,conf.L);
+for id_sample = 1 : size(conf.sample,2)
+    fprintf('id_sample:%d\n',id_sample);
+    filters = estimate.f;
+    inv_concated_circulant_filters = cir_inv_2d(filters);
+    thisH = inv_concated_circulant_filters*conf.sample(:,id_sample);
+    for i = 1:conf.L
+    estimate.H(id_sample,:,i)  = thisH((i-1)*conf.n*conf.n+1:i*conf.n*conf.n)'; 
+    end
+end
+save('../data/mnistTest_estimate.mat','conf','estimate');
+clear;clc;
+
+load '../data/mnistData_estimate.mat'
+train_x = double(conf.H);
+train_y = double(ants_learn_labels);
+clear;
+
+load '../data/mnistTest_estimate.mat'
+test_x = double(conf.H);
+test_y = double(ants_test_labels);
 
 % normalize
 [train_x, mu, sigma] = zscore(train_x);
@@ -99,6 +122,4 @@ opts.numepochs =  1;   %  Number of full sweeps through data
 opts.batchsize = 1;  %  Take a mean gradient step over this many samples
 [nn, L] = nntrain(nn, train_x, train_y, opts);
 
-%After making prediction, can check if shape matches to 'nothing' and
-%return a flag or 0 or 1 instead of label
-label = nnpredict(nn, test_x);
+[er, bad] = nntest(nn, test_x, test_y);
