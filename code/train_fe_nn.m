@@ -44,7 +44,7 @@ conf.tol = 1e-4;
 conf.IniTrue = 0;
 addpath('fn-2d/');
 Tensor = Construct_Tensor_from_Data(conf.sample, conf.N);
-ALS(conf, Tensor)
+estimate = ALS_2d(conf, Tensor)
 
 save('../data/syntheticTest_estimate.mat','conf','estimate');
 
