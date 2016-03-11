@@ -2,8 +2,8 @@
 % Will take in a number of sample images and vectorize it
 % Initially trying to scale down to around 20x20 pixels
 
-load '../data/ants_learn_data'
-load '../data/ants_test_data'
+load '../data/ants_learn_data_pad'
+load '../data/ants_test_data_pad'
 load '../data/ants_learn_labels'
 load '../data/ants_test_labels'
 
@@ -101,15 +101,15 @@ save('../data/mnistTest_estimate.mat','conf','estimate');
 clear;clc;
 load '../data/ants_learn_labels'
 load '../data/mnistData_estimate.mat'
-load '../data/ants_learn_data_nopad'
-load '../data/ants_test_data_nopad'
+load '../data/small_ants_learn_data_nopad'
+load '../data/small_ants_test_data_nopad'
 %train_x = double(estimate.H);
-train_x = double(estimate.H);
+train_x = double(small_ants_learn_data_nopad);
 train_y = double(ants_learn_labels);
 load '../data/ants_test_labels'
 load '../data/mnistTest_estimate.mat'
 %test_x = double(estimate.H);
-test_x = double(estimate.H);
+test_x = double(small_ants_test_data_nopad);
 test_y = double(ants_test_labels);
 
 % normalize
@@ -121,7 +121,7 @@ rand('state',0);
 % 10 is the number of output nodes
 % 100 is number of input  nodes
 % 20 is number of hidden layer nodes
-nn = nnsetup([100 20 5]);
+nn = nnsetup([100 20 2]);
 opts.numepochs =  1;   %  Number of full sweeps through data
 opts.batchsize = 1;  %  Take a mean gradient step over this many samples
 [nn, L] = nntrain(nn, train_x, train_y, opts);

@@ -1,21 +1,17 @@
 %since we only care about labels for 0 and 1, shorten test_y to only look
 %at the first two members
-short_test_y = zeros(10000, 5);
+load mnist_uint8
+short_test_y = zeros(10000, 2);
 for i = 1:10000
     row = test_y(i, 1:10);
-    short_test_y(i, 1:5) = row(1:5);
+    short_test_y(i, 1:2) = row(1:2);
 end
 
 zerolocation = zeros(981, 1);
 zeroindex = 1;
 oneindex = 1;
-twoindex = 1;
-threeindex = 1;
-fourindex = 1;
 onelocation = zeros(1136, 1);
-twolocation = zeros(600,1);
-threelocation = zeros(600,1);
-fourlocation = zeros(600,1);
+
 
 % do the same thing for 2, 3, and 4 
 
@@ -24,11 +20,8 @@ out_data = zeros(500, 784);
 out_labels = zeros(500, 2);
 outindex = 1;
 testindex = 1;
-zerolabel = [1, 0, 0, 0, 0];
-onelabel = [0, 1, 0, 0, 0];
-twolabel = [0, 0, 1, 0, 0];
-threelabel = [0, 0, 0, 1, 0];
-fourlabel = [0, 0, 0, 0, 1];
+zerolabel = [1, 0];
+onelabel = [0, 1];
 %put twolabel, threelabel, and fourlabel
 
 out_data_test = zeros(100, 784);
@@ -63,51 +56,6 @@ for i=1:10000
             out_labels_test(testindex, 1:5) = onelabel;
             testindex = testindex + 1;
             oneindex = oneindex + 1;
-        end
-    end
-    if isequal(short_test_y(i, 1:5), twolabel)
-        if twoindex < 101
-            out_data(outindex, 1:784) = test_x(i, 1:784);
-            twolocation(twoindex) = i;
-            out_labels(outindex, 1:5) = twolabel;
-            outindex = outindex + 1;
-            twoindex = twoindex + 1;
-        end
-        if twoindex >= 101 && twoindex < 121
-            out_data_test(testindex, 1:784) = test_x(i, 1:784);
-            out_labels_test(testindex, 1:5) = twolabel;
-            testindex = testindex + 1;
-            twoindex = twoindex + 1;
-        end
-    end
-    if isequal(short_test_y(i, 1:5), threelabel)
-        if threeindex < 101
-            out_data(outindex, 1:784) = test_x(i, 1:784);
-            threelocation(threeindex) = i;
-            out_labels(outindex, 1:5) = threelabel;
-            outindex = outindex + 1;
-            threeindex = threeindex + 1;
-        end
-        if threeindex >= 101 && threeindex < 121
-            out_data_test(testindex, 1:784) = test_x(i, 1:784);
-            out_labels_test(testindex, 1:5) = threelabel;
-            testindex = testindex + 1;
-            threeindex = threeindex + 1;
-        end
-    end
-    if isequal(short_test_y(i, 1:5), fourlabel)
-        if fourindex < 101
-            out_data(outindex, 1:784) = test_x(i, 1:784);
-            fourlocation(fourindex) = i;
-            out_labels(outindex, 1:5) = fourlabel;
-            outindex = outindex + 1;
-            fourindex = fourindex + 1;
-        end
-        if fourindex >= 101 && fourindex < 121
-            out_data_test(testindex, 1:784) = test_x(i, 1:784);
-            out_labels_test(testindex, 1:5) = fourlabel;
-            testindex = testindex + 1;
-            fourindex = fourindex + 1;
         end
     end
 end
@@ -146,6 +94,10 @@ for i=1:100
     unvec = reshape(row, [28 28]);
     %rotate the image
     rotated = unvec.';
+    if i > 10 && i < 20
+        figure
+        imshow(rotated);
+    end
     %resize image to 10 x 10
     resized = imresize(rotated, [10 10], 'bilinear');
     %zero-pad array to 20 x 20, keeping the first 10 x 10 as the data

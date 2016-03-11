@@ -1,13 +1,13 @@
 function train_fe_nn()
 % Here we will train the resized and zeropadded images for the neural network
 % Images are already preloaded into a .mat file - ants_learn_data.mat
-load ../data/ants_learn_data.mat
+load ../data/ants_learn_data_pad.mat
 load ../data/ants_learn_labels.mat
 
 % Data is in ants_learn_data: 200 images of 1x400 vectorized image
 % Labels are in ants_learn_labels: 200 vectors of [0,1] or [1,0]
 
-[ants_learn_data, mu, sigma] = zscore(ants_learn_data);
+[ants_learn_data_pad, mu, sigma] = zscore(ants_learn_data_pad);
 
 rand('state',0);
 
@@ -24,7 +24,7 @@ rand('state',0);
 % for each image and filter where filter * w = image - empty
 % sample: data of samples in vectorized form (matrix) - given
 
-conf = struct('a', 5, 'n', 10, 'N', 200, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data.');
+conf = struct('a', 5, 'n', 10, 'N', 500, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data.');
 
 % Creates .mat file for test synthetic data and saves input_struct to it
 m = matfile('../data/syntheticTest.mat', 'Writable', true);
