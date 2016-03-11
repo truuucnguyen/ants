@@ -81,7 +81,7 @@ while (true)
             else
                 ampm = 'AM';
             end
-            if (mod(c(4) == 0))
+            if (mod(c(4),12) == 0)
                 c(4) = 12;
                 ampm = 'AM';
             else 

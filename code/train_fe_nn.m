@@ -24,7 +24,7 @@ rand('state',0);
 % for each image and filter where filter * w = image - empty
 % sample: data of samples in vectorized form (matrix) - given
 
-conf = struct('a', 5, 'n', 10, 'N', 500, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data.');
+conf = struct('a', 5, 'n', 10, 'N', 200, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data.');
 
 % Creates .mat file for test synthetic data and saves input_struct to it
 m = matfile('../data/syntheticTest.mat', 'Writable', true);
@@ -73,9 +73,9 @@ save('../data/syntheticTest_estimate.mat','conf','estimate');
 load('../data/syntheticTest_estimate.mat');
 
 % 2 is the number of output nodes
-% 400 is number of input  nodes
+% 100 is number of input  nodes
 % 20 is number of hidden layer nodes
-nn = nnsetup([100 20 5]);
+nn = nnsetup([100 20 2]);
 opts.numepochs =  1;   %  Number of full sweeps through data
 opts.batchsize = 1;  %  Take a mean gradient step over this many samples
 [nn, L] = nntrain(nn, estimate.H, ants_learn_labels, opts);
