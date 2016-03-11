@@ -11,7 +11,7 @@ while (true)
         test_g = rgb2gray(test);
         [x,y] = size(test_g);
         test_sz = min(x,y);
-        test_cropped = imresize(sample_im, [test_sz test_sz]);
+        test_cropped = imresize(test_sz, [test_sz test_sz]);
         test_scale = 10/test_sz;
         test_resized = imresize(test_cropped, test_scale);
         test_f = reshape(test_resized, [1 100]);
@@ -28,7 +28,7 @@ while (true)
         else
             ampm = 'AM';
         end
-        if (mod(c(4) == 0))
+        if (mod(c(4),12) == 0)
             c(4) = 12;
             ampm = 'AM';
         else 
@@ -38,7 +38,7 @@ while (true)
         if label == 0
             fprintf(fid, 'Flag: %d, Date: %d-%02d-%02d, Time: %02d:%02d:%02d %s', 1, c(1), c(2), c(3), c(4), c(5), c(6),ampm);
         else
-            fprintf(fid, '%d', 0);
+            fprintf(fid, 'Flag: %d, Date: %d-%02d-%02d, Time: %02d:%02d:%02d %s', 0, c(1), c(2), c(3), c(4), c(5), c(6),ampm);
         end
         fclose(fid);
     end
