@@ -27,13 +27,13 @@ load '../data/ants_test_labels'
 % neural network will give it true y and weights for training data
 % test data will give y_hat which will show which object it matches
 
-conf = struct('a', 5, 'n', 10, 'N', 200, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data.');
+conf = struct('a', 5, 'n', 10, 'N', 500, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_learn_data.');
 
 % Creates .mat file for test synthetic data and saves input_struct to it
 m = matfile('../data/syntheticDataFE.mat', 'Writable', true);
 save('../data/syntheticDataFE.mat', 'conf');
 
-conf = struct('a', 5, 'n', 10, 'N', 20, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_test_data.');
+conf = struct('a', 5, 'n', 10, 'N', 100, 'L', 1, 'lambda', 0, 'f', [], 'H',[], 'sample', ants_test_data.');
 m = matfile('../data/syntheticTestFE.mat', 'Writable', true);
 save('../data/syntheticTestFE.mat', 'conf');
 
@@ -101,10 +101,14 @@ save('../data/mnistTest_estimate.mat','conf','estimate');
 clear;clc;
 load '../data/ants_learn_labels'
 load '../data/mnistData_estimate.mat'
+load '../data/ants_learn_data_nopad'
+load '../data/ants_test_data_nopad'
+%train_x = double(estimate.H);
 train_x = double(estimate.H);
 train_y = double(ants_learn_labels);
 load '../data/ants_test_labels'
 load '../data/mnistTest_estimate.mat'
+%test_x = double(estimate.H);
 test_x = double(estimate.H);
 test_y = double(ants_test_labels);
 
@@ -117,7 +121,7 @@ rand('state',0);
 % 10 is the number of output nodes
 % 100 is number of input  nodes
 % 20 is number of hidden layer nodes
-nn = nnsetup([100 20 2]);
+nn = nnsetup([100 20 5]);
 opts.numepochs =  1;   %  Number of full sweeps through data
 opts.batchsize = 1;  %  Take a mean gradient step over this many samples
 [nn, L] = nntrain(nn, train_x, train_y, opts);

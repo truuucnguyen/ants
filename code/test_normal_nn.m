@@ -12,9 +12,9 @@ while (true)
         [x,y] = size(test_g);
         test_sz = min(x,y);
         test_cropped = imresize(sample_im, [test_sz test_sz]);
-        test_scale = 20/test_sz;
+        test_scale = 10/test_sz;
         test_resized = imresize(test_cropped, test_scale);
-        test_f = reshape(test_resized, [1 400]);
+        test_f = reshape(test_resized, [1 100]);
         
         %Test
         label = nnpredict(nn, test_f);
