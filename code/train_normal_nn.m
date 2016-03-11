@@ -14,7 +14,7 @@ rand('state',0);
 % 2 is the number of output nodes
 % 400 is number of input  nodes
 % 20 is number of hidden layer nodes
-nn = nnsetup([100 20 5]);
+nn = nnsetup([100 20 2]);
 opts.numepochs =  1;   %  Number of full sweeps through data
 opts.batchsize = 1;  %  Take a mean gradient step over this many samples
 [nn, L] = nntrain(nn, ants_learn_data, ants_learn_labels, opts);
